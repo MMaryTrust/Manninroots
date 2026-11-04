@@ -119,3 +119,42 @@ create table if not exists roots.token_attempts ( -- failed token guesses, for t
   at    timestamptz not null default now()
 );
 create index if not exists roots_token_attempts_idx on roots.token_attempts (phone, at);
+
+-- ---------- Stage 2: Suvai Customers & Care ----------
+create table if not exists customers (
+  id            uuid primary key default gen_random_uuid(),
+  name          text not null,
+  phone         text not null unique check (phone ~ '^[0-9]{10}$'),
+  email         text,
+  status        text not null default 'active' check (status in ('active','paused','completed')),
+  created_at    timestamptz not null default now()
+);
+create index if not exists customers_phone_idx on customers (phone);
+create index if not exists customers_status_idx on customers (status);
+
+create table if not exists subscriptions (
+  id            uuid primary key default gen_random_uuid(),
+  customer_id   uuid not null references customers(id) on delete cascade,
+  plan_id       text not null references plans(id),
+  start_date    date not null,
+  end_date      date not null,
+  status        text not null default 'active' check (status in ('active','paused','completed')),
+  payment_status text not null default 'pending' check (payment_status in ('pending','paid','failed')),
+  created_at    timestamptz not null default now()
+);
+create index if not exists subscriptions_customer_idx on subscriptions (customer_id);
+create index if not exists subscriptions_status_idx on subscriptions (status);
+
+create table if not exists appointments (
+  id            uuid primary key default gen_random_uuid(),
+  customer_id   uuid not null references customers(id) on delete cascade,
+  doctor_id     uuid references users(id),
+  appointment_date timestamptz not null,
+  type          text not null check (type in ('in-person','video','phone')),
+  status        text not null default 'scheduled' check (status in ('scheduled','completed','cancelled')),
+  notes         text,
+  created_at    timestamptz not null default now()
+);
+create index if not exists appointments_customer_idx on appointments (customer_id);
+create index if not exists appointments_date_idx on appointments (appointment_date);
+create index if not exists appointments_status_idx on appointments (status);

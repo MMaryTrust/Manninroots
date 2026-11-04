@@ -76,4 +76,58 @@ export async function seed(db, { password } = {}) {
        on conflict (email) do nothing`,
       [name, email, x.phone || null, x.phone2 || null, hash, role, !!x.finance, x.token ? await bcrypt.hash(x.token, 10) : null]);
   }
+
+  // Seed demo customers
+  if ((await db.query('select 1 from customers limit 1')).rows.length === 0) {
+    const customerData = [
+      ['Ramesh Kumar', '9840011234'],
+      ['Priya Sharma', '9840011235'],
+      ['Anita Nair', '9840011236'],
+      ['Suresh Iyer', '9840011237'],
+      ['Divya Menon', '9840011238'],
+      ['Vikram Singh', '9840011239'],
+      ['Deepa Gupta', '9840011240'],
+      ['Arjun Patel', '9840011241'],
+    ];
+
+    for (const [name, phone] of customerData) {
+      await db.query(
+        'insert into customers(name, phone, status) values ($1,$2,$3) on conflict (phone) do nothing',
+        [name, phone, 'active']
+      );
+    }
+
+    // Seed subscriptions for the customers
+    const { rows: customers } = await db.query('select id from customers limit 5');
+    const plans = ['weekly', 'monthly', 'quarterly'];
+
+    for (let i = 0; i < customers.length; i++) {
+      const plan = plans[i % plans.length];
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + (i % 2 === 0 ? 3 : 10)); // Some due soon
+
+      await db.query(
+        `insert into subscriptions(customer_id, plan_id, start_date, end_date, status, payment_status)
+         values ($1,$2,$3,$4,$5,$6) on conflict do nothing`,
+        [customers[i].id, plan, startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0], 'active', 'paid']
+      );
+    }
+
+    // Seed appointments
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    for (let i = 0; i < customers.length; i++) {
+      const appointmentDate = new Date(tomorrow);
+      appointmentDate.setHours(9 + i, 30, 0);
+      const types = ['in-person', 'video', 'phone'];
+
+      await db.query(
+        `insert into appointments(customer_id, doctor_id, appointment_date, type, status)
+         values ($1,$2,$3,$4,$5) on conflict do nothing`,
+        [customers[i].id, null, appointmentDate.toISOString(), types[i % types.length], 'scheduled']
+      );
+    }
+  }
 }

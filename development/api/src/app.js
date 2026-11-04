@@ -6,6 +6,7 @@ import rateLimit from '@fastify/rate-limit';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
 import rootsRoutes from './routes/roots.js';
+import adminRoutes from './routes/admin.js';
 
 export async function buildApp({ db, jwtSecret = process.env.JWT_SECRET, logger = false } = {}) {
   if (!jwtSecret) throw new Error('JWT_SECRET is required');
@@ -33,5 +34,6 @@ export async function buildApp({ db, jwtSecret = process.env.JWT_SECRET, logger 
   await app.register(authRoutes, { prefix: '/api/auth' });
   await app.register(publicRoutes, { prefix: '/api' });
   await app.register(rootsRoutes, { prefix: '/api/roots' });
+  await app.register(adminRoutes, { prefix: '/api/admin' });
   return app;
 }
