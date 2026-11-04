@@ -8,7 +8,7 @@ export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 /* language: English default, Tamil toggle, persisted in localStorage */
 const TA = {
   'See plans': 'திட்டங்களைக் காண்க', "This week's menu": 'இந்த வார உணவுப்பட்டியல்', Home: 'முகப்பு', Plans: 'திட்டங்கள்', Menu: 'உணவுப்பட்டியல்',
-  'How it works': 'எப்படி செயல்படுகிறது', 'Sign in': 'உள்நுழை', 'Sign up': 'பதிவு செய்', 'Sign out': 'வெளியேறு', Roots: 'வேர்கள்',
+  Explore: 'ஆராயுங்கள்', 'All kitchens': 'அனைத்து உணவகங்கள்', restaurants: 'உணவகங்கள்', dishes: 'உணவுகள்', 'Back to all kitchens': 'அனைத்து உணவகங்களுக்கும் திரும்பு', 'Top at': 'சிறந்தவை —', 'Recommended for you': 'உங்களுக்கு பரிந்துரை', 'Restaurant orders view': 'உணவக ஆர்டர்கள்', 'My orders': 'என் ஆர்டர்கள்', Account: 'கணக்கு', 'How it works': 'எப்படி செயல்படுகிறது', 'Sign in': 'உள்நுழை', 'Sign up': 'பதிவு செய்', 'Sign out': 'வெளியேறு', Roots: 'வேர்கள்',
   'Taste of the Land': 'மண்ணின் சுவை', 'Getting started': 'தொடங்குவது எப்படி', 'Pick a rhythm': 'உங்கள் தாளத்தைத் தேர்ந்தெடுங்கள்',
   'Share family health profile': 'குடும்ப சுகாதார விவரம் பகிருங்கள்', 'Doctor consultation': 'மருத்துவர் ஆலோசனை', 'Enjoy traditional meals': 'மரபு உணவை அனுபவியுங்கள்',
   'Family meal plans': 'குடும்ப உணவுத் திட்டங்கள்', 'Heritage menu': 'மரபு வழி உணவுப்பட்டியல்', 'Subscribe': 'சந்தா செலுத்து', 'per day': 'நாளுக்கு',

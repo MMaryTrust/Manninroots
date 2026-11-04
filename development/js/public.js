@@ -16,7 +16,10 @@ export function publicShell(inner, active = '') {
       ${u ? `<a class="btn sm" href="#/app">${t('Dashboard')}</a>` : `<a class="btn ghost sm" href="#/signin">${t('Sign in')}</a><a class="btn sm" href="#/signup">${t('Sign up')}</a>`}
     </div></div></header>
   <main>${inner}</main>
-  <footer class="pub-foot"><div class="wrap"><b>Mannin Suvai Unavagam</b> · ${ADDRESS}<br><small>${bi('Heritage meals for elders and families, cooked in mud pots with cold-pressed sesame oil.', 'மண்பானையில் சமைத்த மரபு உணவு — பெரியோருக்கும் குடும்பத்திற்கும்.')}</small></div></footer>`;
+  <footer class="pub-foot"><div class="wrap foot-grid">
+    <div><b>Mannin Suvai Unavagam</b><br><small>${ADDRESS}</small><p class="small">${bi('Heritage meals for elders and families, cooked in mud pots with cold-pressed sesame oil.', 'மண்பானையில் சமைத்த மரபு உணவு — பெரியோருக்கும் குடும்பத்திற்கும்.')}</p></div>
+    <nav aria-label="Footer"><b>${t('Explore')}</b>${nav.map(([h, l]) => `<a href="${h}">${t(l)}</a>`).join('')}</nav>
+    <nav aria-label="Account"><b>${t('Account')}</b><a href="#/signin">${t('Sign in')}</a><a href="#/signup">${t('Sign up')}</a></nav></div></footer>`;
 }
 
 export const planCard = (p, cta = true) => `<article class="plan card ${p.id === 'yearly' ? 'gold' : ''}">
@@ -42,12 +45,13 @@ const steps = [
 const stepsHtml = () => `<ol class="steps">${steps.map(([a, b], i) => `<li class="reveal"><span class="num mono">${i + 1}</span><h3 class="serif">${t(a)}</h3><p>${b}</p></li>`).join('')}</ol>`;
 
 routes['/'] = () => publicShell(`
-  <section class="hero"><div class="wrap">
+  <section class="hero"><div class="wrap hero-grid"><div>
     <p class="eyebrow">${bi('Heritage food for elders & families', 'பெரியோருக்கும் குடும்பத்திற்கும் மரபு உணவு')}</p>
     <h1 class="serif">${bi('The <em>taste of the land</em>, three times a day.', 'மண்ணின் சுவை, <em>தினமும் மூன்று வேளை</em>.')}</h1>
     <p class="lead">${bi('Thanjavur and Pudukkottai home cooking — mud-pot thalis, native millets and cold-pressed sesame oil — planned with a doctor for your family.', 'தஞ்சை, புதுக்கோட்டை மரபு சமையல் — மண்பானை தாலி, சிறுதானியம், செக்கு எண்ணெய் — மருத்துவர் ஆலோசனையுடன்.')}</p>
-    <div class="row gap"><a class="btn lg" href="#/plans">${t('See plans')}</a><a class="btn ghost lg" href="#/menu">${t("This week's menu")}</a></div>
-    <p class="muted">📍 ${ADDRESS}</p></div></section>
+    <div class="row gap wrap"><a class="btn lg" href="#/plans">${t('See plans')}</a><a class="btn ghost lg" href="#/menu">${t("This week's menu")}</a></div>
+    <p class="muted">📍 ${ADDRESS}</p></div>
+    <div class="hero-photos" aria-hidden="true"><img src="assets/home-heritage-grains.jpg" alt="" loading="eager"><img src="assets/home-ragi-kanji.jpg" alt="" loading="lazy"></div></div></section>
   <section class="wrap sec"><h2 class="serif">${t('Getting started')}</h2>${stepsHtml()}</section>
   <section class="sec stage-sec"><div class="wrap row between"><h2 class="serif">${t('Family meal plans')}</h2>
     <div class="row gap"><button class="btn ghost sm" data-act="stage" data-d="-1" aria-label="Previous plan">←</button><button class="btn ghost sm" data-act="stage" data-d="1" aria-label="Next plan">→</button></div></div>

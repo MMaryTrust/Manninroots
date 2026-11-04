@@ -1,7 +1,7 @@
 import { db, rdb, saveRoots, uid, currentUser, checkPayToken, notify } from './store.js';
 import { esc, t, bi, lang, setLang, toast, modal, acts, routes, go, rerender, logo, textBtn } from './util.js';
 
-const S = { region: localStorage.getItem('roots_region') || 'IN', cart: [], q: '', cuisine: '', filter: '', otp: null };
+const S = { region: localStorage.getItem('roots_region') || 'IN', cart: [], q: '', cuisine: '', filter: '', kitchen: '', otp: null };
 try { S.cart = JSON.parse(localStorage.getItem('roots_cart') || '[]'); } catch { S.cart = []; }
 const persist = () => localStorage.setItem('roots_cart', JSON.stringify(S.cart));
 const FEE = { IN: { sym: '₹', fee: 50, city: 'Chennai, India' }, AU: { sym: '$', fee: 10, city: 'Sydney, Australia' } };
@@ -32,6 +32,10 @@ routes['/roots'] = () => {
   if (S.filter === 'top') dishes = dishes.filter((d) => d.rating >= 4.6).sort((a, b) => b.rating - a.rating); // surfaced immediately, no probation
   if (q) dishes = dishes.filter((d) => (d.name + d.rname + d.cat).toLowerCase().includes(q));
   const rests = R.restaurants.filter((r) => live(r) && (!S.cuisine || r.cuisine === S.cuisine) && (!q || (r.name + r.cuisine).toLowerCase().includes(q)));
+  if (S.kitchen) dishes = dishes.filter((d) => d.rid === S.kitchen);
+  const kList = R.restaurants.filter(live), kSel = kList.find((r) => r.id === S.kitchen);
+  const recs = [...dishes].sort((a, b) => b.rating - a.rating).slice(0, 3);
+  const byRest = (kSel ? [kSel] : kList).map((r) => [r, dishes.filter((d) => d.rid === r.id)]).filter(([, ds]) => ds.length);
   const full = cartRestaurants().length;
   const tiles = [['food', '🍴', 'Order Food'], ['voice', '🎙️', 'Voice Order'], ['rest', '🏪', 'Explore Restaurants'], ['healthy', '🌿', 'Healthy Choices'], ['top', '⭐', 'Top Rated'], ['offers', '🏷️', 'Offers & Deals']];
   return `<div class="roots"><header class="r-head row between">
@@ -44,8 +48,14 @@ routes['/roots'] = () => {
   <section class="r-cuis"><h2>${t('Explore Our Cuisines')}</h2><div class="cuis">${CUIS.map(([k, ta, i]) => `<button class="cu ${S.cuisine === k ? 'on' : ''}" data-act="rcuis" data-k="${k}">${photo(k)}${bi(k, ta)}</button>`).join('')}</div></section>
   ${auBlocked() ? '<p class="r-sec wide notice" role="status">Australian prices are not set yet. An Owner or Admin must enter the AUD rate in Staff → Roots before orders can be taken in Australia.</p>' : ''}
   ${S.filter === 'offers' ? `<section class="r-sec">${R.offers.map((o) => `<div class="offer"><b class="mono">${o.code}</b> ${esc(o.text)}</div>`).join('')}</section>` : ''}
-  <div class="r-main"><section class="r-sec"><h2>${S.filter === 'top' ? '⭐ ' + t('Top Rated') : S.filter === 'healthy' ? '🌿 ' + t('Healthy Choices') : bi('Dishes', 'உணவுகள்')}</h2>${dishes.map(dishRow).join('') || '<p>No matches.</p>'}</section>
-  <section class="r-sec"><h2>${t('Explore Restaurants')}</h2>${rests.map((r) => `<article class="rrest"><b>${esc(bi(r.name, r.ta))}</b><br><small>${esc(r.cuisine)} · ${esc(r.area)} · ★ ${r.rating}</small></article>`).join('')}</section>
+  <section class="r-sec wide" aria-label="Choose a kitchen"><h2>${bi('Choose a kitchen', 'உணவகத்தைத் தேர்ந்தெடுக்கவும்')}</h2>
+    <div class="kitchens"><button class="kit ${!S.kitchen ? 'on' : ''}" data-act="rkit" data-k=""><b>${t('All kitchens')}</b><small>${kList.length} ${t('restaurants')}</small></button>
+    ${kList.map((r) => `<button class="kit ${S.kitchen === r.id ? 'on' : ''}" data-act="rkit" data-k="${r.id}"><b>${esc(bi(r.name, r.ta))}</b><small>★ ${r.rating} · ${allDishes().filter((d) => d.rid === r.id).length} ${t('dishes')}</small></button>`).join('')}</div>
+    ${kSel ? `<button class="linkbtn" data-act="rkit" data-k="">← ${t('Back to all kitchens')}</button>` : ''}</section>
+  <div class="r-main"><div>
+  <section class="r-sec"><h2>${S.filter === 'top' ? '⭐ ' + t('Top Rated') : S.filter === 'healthy' ? '🌿 ' + t('Healthy Choices') : kSel ? t('Top at') + ' ' + esc(bi(kSel.name, kSel.ta)) : t('Recommended for you')}</h2>${recs.map(dishRow).join('') || '<p>No matches.</p>'}</section>
+  ${byRest.map(([r, ds]) => `<section class="r-sec"><h2>🏪 ${esc(bi(r.name, r.ta))} <small>★ ${r.rating} · ${esc(r.area)}</small></h2>${ds.map(dishRow).join('')}</section>`).join('')}
+  <p class="r-sec small"><a href="#/app/roots">${t('Restaurant orders view')}</a> · <a href="#/roots/orders">${t('My orders')}</a></p></div>
   <aside class="r-cart" aria-label="Cart"><h2>${t('Cart')} <small>(${full}/3 restaurants)</small></h2>${cartHtml()}</aside></div></div>`;
 };
 
@@ -62,6 +72,7 @@ document.addEventListener('input', (e) => { if (e.target.id === 'rq') { S.q = e.
 document.addEventListener('change', (e) => { if ('actRegion' in e.target.dataset) { S.region = e.target.value; localStorage.setItem('roots_region', S.region); rerender(); } });
 acts.rlang = () => { setLang(lang() === 'en' ? 'ta' : 'en'); rerender(); };
 acts.rtile = (el) => { const k = el.dataset.k; if (k === 'voice') return acts.rvoice(); S.filter = ['healthy', 'top', 'offers'].includes(k) && S.filter !== k ? k : ''; if (k === 'food' || k === 'rest') S.cuisine = ''; rerender(); };
+acts.rkit = (el) => { S.kitchen = el.dataset.k; rerender(); };
 acts.rcuis = (el) => { S.cuisine = S.cuisine === el.dataset.k ? '' : el.dataset.k; rerender(); };
 function addToCart(rid, id) {
   const d = allDishes().find((x) => x.id === id); if (!d) return false;
