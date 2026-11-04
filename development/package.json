@@ -1,0 +1,1 @@
+{ "name": "mannin", "version": "1.0.0", "private": true, "scripts": { "start": "node serve.js", "test": "node tests/e2e.mjs .test-profile" } }
