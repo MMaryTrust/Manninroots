@@ -37,6 +37,7 @@ const RESTAURANTS = [
 const USERS = [
   ['Meenakshi Sundaram', 'owner@mannin.test', 'owner', { finance: true }],
   ['Kavitha Rajan', 'admin@mannin.test', 'admin'],
+  ['Mannin Admin', 'admin@manninsuvai.com', 'admin'],
   ['Dr. Lakshmi Narayanan', 'docadmin@mannin.test', 'doctorAdmin'],
   ['Dr. Arumugam P', 'doctor1@mannin.test', 'doctor'],
   ['Dr. Sivagami R', 'doctor2@mannin.test', 'doctor'],
