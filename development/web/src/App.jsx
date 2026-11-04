@@ -43,12 +43,22 @@ function RequireAuth({ children }) {
   return user ? children : <Navigate to="/signin" state={{ from: loc.pathname }} replace />;
 }
 
+function AdminOnly({ children }) {
+  const { user, ready } = useAuth();
+  const loc = useLocation();
+  if (!ready) return <p className="wrap sec">Loading…</p>;
+  if (!user) return <Navigate to="/signin" state={{ from: loc.pathname }} replace />;
+  const ADMIN_ROLES = ['owner', 'admin'];
+  if (!ADMIN_ROLES.includes(user.role)) return <div className="wrap sec"><h1 className="serif">Access Denied</h1><p>Only administrators can access this area.</p><Link className="btn" to="/">Home</Link></div>;
+  return children;
+}
+
 export default function App() {
   return (
     <Routes>
-      <Route path="/roots" element={<Roots />} />
-      <Route path="/roots/orders" element={<RootsOrders />} />
-      <Route path="/app/*" element={<RequireAuth><Staff /></RequireAuth>} />
+      <Route path="/roots" element={<AdminOnly><Roots /></AdminOnly>} />
+      <Route path="/roots/orders" element={<AdminOnly><RootsOrders /></AdminOnly>} />
+      <Route path="/app/*" element={<AdminOnly><Staff /></AdminOnly>} />
       <Route path="*" element={
         <PublicShell>
           <Routes>

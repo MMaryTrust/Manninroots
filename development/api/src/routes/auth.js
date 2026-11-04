@@ -17,6 +17,8 @@ export default async function (app) {
     // same message for unknown email and wrong password
     if (!u || !(await bcrypt.compare(p.data.password, u.password_hash))) return reply.code(401).send({ error: 'Email or password is incorrect' });
     if (u.status !== 'active') return reply.code(403).send({ error: 'This account is suspended' });
+    const ADMIN_ROLES = ['owner', 'admin'];
+    if (!ADMIN_ROLES.includes(u.role)) return reply.code(403).send({ error: 'Only administrators can access this application' });
     await db.query('insert into audit_log(actor, action, detail) values ($1,$2,$3)', [u.email, 'Sign in', u.role]);
     reply.setCookie('mannin_token', app.jwt.sign({ sub: u.id, role: u.role, fin: u.finance_admin }), cookieOpts);
     return { user: pub(u) };

@@ -24,6 +24,7 @@ export default function SignIn() {
   return (
     <section className="wrap narrow sec">
       <h1 className="serif">{t('Sign in')}</h1>
+      <p className="muted" style={{ marginBottom: '20px', fontSize: '0.95em' }}>Admin access only. Please sign in with your administrator account.</p>
       <form className="form card" onSubmit={submit}>
         <label>{t('Email')}<input name="email" type="email" required autoComplete="username" /></label>
         <label>{t('Password')}<input name="password" type="password" required autoComplete="current-password" /></label>
