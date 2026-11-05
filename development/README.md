@@ -31,7 +31,7 @@ The plain-JS prototype above stays as the behaviour reference. The production st
     # API (in-process PGlite, data lost on restart; good for local work)
     cd api && JWT_SECRET=dev-secret SEED_PASSWORD=<demo password> DEV_SEED=1 node src/server.js
     # Web
-    cd web && npm run dev            # http://localhost:5174
+    cd web && npm run dev            # http://localhost:5175
 
 ### Use a hosted PostgreSQL
 Copy `api/.env.example` to `api/.env` (never commit it), put your connection string in `DATABASE_URL`, then:
