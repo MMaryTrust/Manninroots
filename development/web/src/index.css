@@ -1,0 +1,81 @@
+/* Layer order: Tailwind utilities beat the admin stylesheet, which stays unchanged in its own layer. */
+@layer theme, legacy, base, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "./styles.css" layer(legacy);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+/* Only Roots files use Tailwind; admin pages never get utility classes generated. */
+@source "./pages/roots";
+@source "./components/roots";
+
+@theme inline {
+  --font-sans: "Inter", "Noto Sans Tamil", system-ui, sans-serif;
+  --font-serif: "Noto Serif", "Noto Serif Tamil", Georgia, serif;
+  --color-background: var(--r-background);
+  --color-foreground: var(--r-foreground);
+  --color-card: var(--r-card);
+  --color-primary: var(--r-primary);
+  --color-primary-foreground: var(--r-primary-foreground);
+  --color-secondary: var(--r-secondary);
+  --color-muted: var(--r-muted);
+  --color-muted-foreground: var(--r-muted-foreground);
+  --color-accent: var(--r-accent);
+  --color-warning: var(--r-warning);
+  --color-border: var(--r-border);
+  --color-input: var(--r-border);
+  --shadow-card: 0 6px 20px -10px oklch(0.25 0.02 50 / 0.25);
+}
+
+@layer base {
+  .roots-shell {
+    --r-background: oklch(0.96 0.025 82);
+    --r-foreground: oklch(0.3 0.06 50);
+    --r-card: oklch(1 0 0);
+    --r-primary: oklch(0.52 0.15 42);
+    --r-primary-foreground: oklch(1 0 0);
+    --r-secondary: oklch(0.48 0.13 145);
+    --r-muted: oklch(0.94 0.018 78);
+    --r-muted-foreground: oklch(0.47 0.025 55);
+    --r-accent: oklch(0.8 0.165 82);
+    --r-warning: oklch(0.57 0.13 65);
+    --r-border: oklch(0.9 0.025 78);
+    font-family: var(--font-sans);
+    color: var(--r-foreground);
+    line-height: 1.5;
+  }
+
+  /* Scoped stand-in for Tailwind's preflight, so admin pages keep browser and styles.css defaults. */
+  .roots-shell *,
+  .roots-shell ::before,
+  .roots-shell ::after {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
+  .roots-shell :where(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    font-family: inherit;
+  }
+  .roots-shell :where(ol, ul, menu) { list-style: none; }
+  .roots-shell :where(a) { color: inherit; text-decoration: inherit; }
+  .roots-shell :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border-radius: 0;
+    min-height: 0;
+  }
+  .roots-shell :where(button) { cursor: pointer; }
+  .roots-shell :where(label) { display: inline; flex-direction: row; gap: normal; font-weight: inherit; font-size: inherit; min-height: 0; }
+  .roots-shell :where(em) { color: inherit; }
+  .roots-shell :where(fieldset) { border-radius: 0; }
+  .roots-shell :where(table) { width: auto; margin: 0; background: none; border-radius: 0; overflow: visible; border-collapse: collapse; }
+  .roots-shell :where(th, td) { padding: 0; text-align: inherit; border-bottom: 0; }
+  .roots-shell :where(img, svg, video) { display: block; vertical-align: middle; }
+  .roots-shell :where(img, video) { max-width: 100%; height: auto; }
+  .roots-shell :where(input)::placeholder { color: oklch(0.55 0.02 55); opacity: 1; }
+}

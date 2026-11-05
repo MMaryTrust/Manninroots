@@ -19,7 +19,7 @@ export default function RootsShell({ children, fullHero }) {
             <Link to="/roots" className="flex items-center gap-2">
               <span className="text-3xl">🌿</span>
               <div>
-                <h1 className="text-lg font-serif font-bold text-amber-900">मण्णिन रूट्स</h1>
+                <h1 className="text-lg font-serif font-bold text-amber-900">மண்ணின் வேர்கள்</h1>
                 <p className="text-xs text-amber-700">Mannin Roots</p>
               </div>
             </Link>
@@ -43,7 +43,7 @@ export default function RootsShell({ children, fullHero }) {
       )}
 
       {/* Main Content */}
-      <main className={fullHero ? 'flex-1' : 'flex-1 pb-24 max-w-5xl w-full mx-auto px-4 py-8'}>
+      <main className={fullHero ? 'flex-1 pb-20' : 'flex-1 pb-24 max-w-5xl w-full mx-auto px-4 py-8'}>
         {children}
       </main>
 

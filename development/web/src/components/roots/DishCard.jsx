@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Star, Plus } from 'lucide-react';
 import { useRootsI18n } from '../../lib/roots-i18n';
 import { useCart } from '../../lib/roots-cart';
+import { cuisineImage } from '../../lib/roots-images';
 
 export default function DishCard({ dish }) {
   const { t } = useRootsI18n();
@@ -18,43 +19,38 @@ export default function DishCard({ dish }) {
   };
 
   return (
-    <div className="group">
-      <Link
-        to={`/roots/dish/${dish.id}`}
-        className="bg-white border-2 border-amber-100 rounded-2xl overflow-hidden hover:shadow-xl hover:border-amber-400 transition-all transform hover:-translate-y-1 block h-full"
-      >
-        <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-5xl relative overflow-hidden">
-          <span className="group-hover:scale-110 transition-transform duration-300">🍽️</span>
+    <Link
+      to={`/roots/dish/${dish.id}`}
+      className="group flex flex-col bg-white border border-amber-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
+    >
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img
+          src={cuisineImage(dish.cuisine)}
+          alt=""
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-xs font-bold text-amber-900 shadow">
+          <Star size={12} className="fill-amber-400 text-amber-400" />
+          {dish.rating?.toFixed(1) || '–'}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex-1">
+          <h3 className="font-serif text-lg font-semibold text-gray-900 line-clamp-2">{dish.name || 'Dish'}</h3>
+          <p className="mt-1 text-sm text-gray-500">{dish.restName}</p>
         </div>
-        <div className="p-4 space-y-3 flex flex-col h-full">
-          <div className="flex-1">
-            <h3 className="font-serif font-semibold text-gray-900 line-clamp-2 text-sm">{dish.name || 'Dish'}</h3>
-            {dish.nameTa && <p className="text-xs text-gray-600 mt-1 font-medium">{dish.nameTa}</p>}
-            <p className="text-xs text-gray-700 mt-2">{dish.restName || 'Restaurant'}</p>
-          </div>
-
-          <div className="space-y-2 border-t border-amber-100 pt-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <Star size={13} className="fill-amber-400 text-amber-400" />
-                <span className="text-xs font-bold text-amber-900">{dish.rating?.toFixed(1) || 'N/A'}</span>
-              </div>
-              <span className="text-xs text-gray-700 font-semibold">
-                ₹{dish.priceInr || '0'}
-              </span>
-            </div>
-
-            <button
-              onClick={handleAdd}
-              className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-2 rounded-xl font-semibold text-sm hover:shadow-lg transition-all flex items-center justify-center gap-2"
-              aria-label={t('add')}
-              title="Add to cart"
-            >
-              <Plus size={18} /> Add
-            </button>
-          </div>
+        <div className="flex items-center justify-between">
+          <span className="text-lg font-bold text-gray-900">₹{dish.priceInr ?? 0}</span>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-1 rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 transition"
+            aria-label={`${t('add')}: ${dish.name}`}
+          >
+            <Plus size={16} /> Add
+          </button>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 }

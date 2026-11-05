@@ -1,207 +1,181 @@
-import { useState, useMemo, useRef } from 'react';
-import { Mic, ChefHat, Leaf, Star, Gift, Store } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Mic, ChefHat, Leaf, Star, Gift, Store, Search, Globe, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import RootsShell from '../../components/roots/RootsShell';
 import DishCard from '../../components/roots/DishCard';
 import RestaurantChip from '../../components/roots/RestaurantChip';
 import { useRootsI18n } from '../../lib/roots-i18n';
+import { useCart } from '../../lib/roots-cart';
+import { LANGUAGES } from '../../lib/roots-translations';
+import { CUISINE_IMAGES } from '../../lib/roots-images';
 import { useApi } from '../../hooks';
-import dosaImg from '../../assets/dosa.jpg';
-import biryaniImg from '../../assets/biryani.jpg';
-import mealsImg from '../../assets/meals.jpg';
-import kothuImg from '../../assets/kothu.jpg';
-import currencyImg from '../../assets/chettinad.jpg';
-import sweetsImg from '../../assets/sweets.jpg';
-
-const CUISINES = [
-  { name: 'South Indian', image: dosaImg },
-  { name: 'Biryani', image: biryaniImg },
-  { name: 'Traditional Meals', image: mealsImg },
-  { name: 'Street Food', image: kothuImg },
-  { name: 'Curries', image: currencyImg },
-  { name: 'Sweets', image: sweetsImg },
-];
-
-const QUICK_ACTIONS = [
-  { icon: ChefHat, label: 'Order Food', color: 'from-amber-600 to-orange-600' },
-  { icon: Mic, label: 'Voice Order', color: 'from-gray-700 to-gray-800' },
-  { icon: Store, label: 'Explore', color: 'from-gray-700 to-gray-800' },
-  { icon: Leaf, label: 'Healthy', color: 'from-gray-700 to-gray-800' },
-  { icon: Star, label: 'Top Rated', color: 'from-gray-700 to-gray-800' },
-  { icon: Gift, label: 'Offers', color: 'from-gray-700 to-gray-800' },
-];
 
 export default function RootsHome() {
-  const { lang } = useRootsI18n();
+  const { lang, setLang } = useRootsI18n();
+  const { count } = useCart();
+  const navigate = useNavigate();
   const [catalog] = useApi('/roots/catalog', { settings: {}, restaurants: [] });
+  const [query, setQuery] = useState('');
   const carouselRef = useRef(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchRef = useRef(null);
+  const kitchensRef = useRef(null);
 
   const { restaurants = [] } = catalog;
+  const ta = lang === 'ta';
 
-  const allDishes = useMemo(() => {
-    return restaurants.flatMap((r) =>
-      (r.dishes || []).map((d) => ({
-        ...d,
-        restId: r.id,
-        restName: r.name,
-        restTa: r.nameTa,
-      }))
-    );
-  }, [restaurants]);
+  const topDishes = useMemo(
+    () =>
+      restaurants
+        .flatMap((r) => (r.dishes || []).map((d) => ({ ...d, restId: r.id, restName: r.name })))
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 6),
+    [restaurants]
+  );
+  const topKitchens = useMemo(
+    () => [...restaurants].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 6),
+    [restaurants]
+  );
 
-  const topDishes = useMemo(() => {
-    return allDishes.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12);
-  }, [allDishes]);
+  const goSearch = (q) => navigate(`/roots/search?q=${encodeURIComponent(q)}`);
+  const scrollCarousel = (dir) => carouselRef.current?.scrollBy({ left: dir * 400, behavior: 'smooth' });
+  const scrollToKitchens = () => kitchensRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-  const scrollCarousel = (direction) => {
-    if (carouselRef.current) {
-      const scrollAmount = 400;
-      carouselRef.current.scrollBy({
-        left: direction === 'next' ? scrollAmount : -scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-  };
+  const actions = [
+    { icon: ChefHat, label: ta ? 'உணவு ஆர்டர்' : 'Order Food', onClick: () => searchRef.current?.focus(), primary: true },
+    { icon: Mic, label: ta ? 'குரல் ஆர்டர்' : 'Voice Order', onClick: () => searchRef.current?.focus() },
+    { icon: Store, label: ta ? 'உணவகங்கள்' : 'Explore Restaurants', onClick: scrollToKitchens },
+    { icon: Leaf, label: ta ? 'ஆரோக்கியம்' : 'Healthy Choices', onClick: () => goSearch('Healthy') },
+    { icon: Star, label: ta ? 'சிறந்தவை' : 'Top Rated', onClick: scrollToKitchens },
+    { icon: Gift, label: ta ? 'சலுகைகள்' : 'Offers & Deals', onClick: () => goSearch('') },
+  ];
 
   return (
-    <RootsShell fullHero={true}>
-      {/* HERO SECTION - Dark Professional Design */}
-      <div className="relative w-screen -ml-[calc((100vw-100%)/2)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 pt-16 pb-20 px-4 overflow-hidden">
-        {/* Background Glow Effect */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gradient-to-b from-orange-500/20 via-orange-500/10 to-transparent rounded-full blur-3xl"></div>
-          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl"></div>
+    <RootsShell fullHero>
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 px-4 pb-16 pt-5 text-white">
+        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/20 blur-3xl" />
+
+        <div className="relative mx-auto flex max-w-6xl items-center justify-between">
+          <label className="flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-4 py-2 text-sm backdrop-blur">
+            <Globe size={18} aria-hidden />
+            <span className="sr-only">Language</span>
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              className="cursor-pointer bg-transparent pr-1 text-white outline-none [&>option]:text-gray-900"
+            >
+              {Object.entries(LANGUAGES).map(([code, label]) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
+          </label>
+          <Link
+            to="/roots/cart"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/5 hover:bg-white/15 transition"
+            aria-label={`Cart: ${count} items`}
+          >
+            <ShoppingBag size={20} />
+            {count > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-xs font-bold">
+                {count}
+              </span>
+            )}
+          </Link>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto">
-          {/* Logo & Branding */}
-          <div className="text-center mb-10">
-            <div className="text-7xl mb-6">🌿</div>
-            <h1 className="text-5xl font-serif font-bold text-white mb-2 leading-tight">
-              தமிழ் மண்ணின் வேர்கள்
-            </h1>
-            <h2 className="text-3xl font-bold text-orange-400 mb-4">MANNIN ROOTS</h2>
-            <p className="text-xl text-gray-300 font-medium">
-              {lang === 'ta' ? 'நம் மண். நம் சுவை.' : 'Our Roots. Our Taste.'}
-            </p>
-          </div>
+        <div className="relative mx-auto mt-6 max-w-3xl text-center">
+          <div className="text-6xl" aria-hidden>🌿</div>
+          <h1 className="mt-4 font-serif text-4xl font-bold leading-tight sm:text-5xl">தமிழ் மண்ணின் வேர்கள்</h1>
+          <p className="mt-2 font-serif text-2xl font-semibold tracking-widest text-orange-400 sm:text-3xl">MANNIN ROOTS</p>
+          <p className="mt-4 text-lg font-semibold text-amber-300">நம் மண். நம் சுவை.</p>
+          <p className="text-lg text-gray-200">Our Roots. Our Taste.</p>
 
-          {/* Search Bar with Voice */}
-          <div className="mb-8 flex gap-3 max-w-2xl mx-auto">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder={lang === 'ta' ? 'உணவுக்கடை, உணவு தேடுங்கள்...' : 'Search restaurants, dishes...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-6 py-4 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 text-lg font-medium"
-              />
-            </div>
-            <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-full hover:shadow-lg transition-all transform hover:scale-105">
-              <Mic size={24} />
+          <form
+            onSubmit={(e) => { e.preventDefault(); goSearch(query); }}
+            className="mx-auto mt-8 flex max-w-2xl items-center rounded-full bg-white p-1.5 pl-5 shadow-2xl"
+            role="search"
+          >
+            <Search size={20} className="shrink-0 text-gray-500" aria-hidden />
+            <input
+              ref={searchRef}
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={ta ? 'உணவகம், உணவு தேடுங்கள்...' : 'Search restaurants, dishes or cuisines...'}
+              aria-label="Search"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-base text-gray-900 outline-none"
+            />
+            <button type="submit" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-500 hover:bg-orange-600 transition" aria-label="Search">
+              <Mic size={20} />
             </button>
-          </div>
+          </form>
 
-          {/* Quick Action Pills */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            {QUICK_ACTIONS.map(({ icon: Icon, label, color }) => (
+          <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-6">
+            {actions.map(({ icon: Icon, label, onClick, primary }) => (
               <button
                 key={label}
-                className={`flex flex-col items-center gap-2 px-5 py-3 rounded-2xl border-2 border-gray-700 hover:border-orange-500 transition-all bg-gradient-to-br ${color} hover:shadow-xl transform hover:scale-105`}
+                onClick={onClick}
+                className={`flex flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-3 text-xs font-semibold leading-tight backdrop-blur transition hover:-translate-y-0.5 ${
+                  primary
+                    ? 'border-orange-400 bg-orange-500/25 text-orange-100'
+                    : 'border-white/20 bg-white/5 text-white hover:border-orange-400'
+                }`}
               >
-                <Icon size={20} className="text-white" />
-                <span className="text-xs font-bold text-white whitespace-nowrap">{label}</span>
+                <Icon size={22} className={primary ? 'text-orange-300' : 'text-white'} aria-hidden />
+                {label}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* MAIN CONTENT */}
-      <div className="space-y-16 px-4 py-12 max-w-6xl mx-auto w-full">
-        {/* CUISINES CAROUSEL */}
+      <div className="mx-auto max-w-6xl space-y-14 px-4 py-12">
         <section>
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-serif font-bold text-gray-900">
-              {lang === 'ta' ? 'சமையல் வகைகளை ஆராயுங்கள்' : 'Explore Our Cuisines'}
+          <div className="mb-6 flex items-end justify-between">
+            <h2 className="font-serif text-3xl font-bold text-gray-900">
+              {ta ? 'எங்கள் உணவு வகைகள்' : 'Explore Our Cuisines'}
+              <span className="mt-2 block h-1 w-12 rounded bg-orange-500" />
             </h2>
-            <div className="flex gap-3">
-              <button
-                onClick={() => scrollCarousel('prev')}
-                className="w-12 h-12 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-xl transition-all transform hover:scale-110"
-              >
-                ‹
+            <div className="hidden gap-2 sm:flex">
+              <button onClick={() => scrollCarousel(-1)} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100" aria-label="Previous">
+                <ChevronLeft size={20} />
               </button>
-              <button
-                onClick={() => scrollCarousel('next')}
-                className="w-12 h-12 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-xl transition-all transform hover:scale-110"
-              >
-                ›
+              <button onClick={() => scrollCarousel(1)} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100" aria-label="Next">
+                <ChevronRight size={20} />
               </button>
             </div>
           </div>
-
-          {/* Carousel Container */}
-          <div
-            ref={carouselRef}
-            className="flex gap-5 overflow-x-auto pb-4 scroll-smooth"
-          >
-            {CUISINES.map((cuisine, idx) => (
-              <div key={idx} className="flex-shrink-0 w-56 group cursor-pointer">
-                <div className="relative h-48 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
-                  <img
-                    src={cuisine.image}
-                    alt={cuisine.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-5">
-                    <span className="text-white font-serif font-bold text-lg">{cuisine.name}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Carousel Dots */}
-          <div className="flex justify-center gap-2 mt-6">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="w-2 h-2 rounded-full bg-orange-500"></div>
+          <div ref={carouselRef} className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none]">
+            {Object.entries(CUISINE_IMAGES).map(([name, img]) => (
+              <button
+                key={name}
+                onClick={() => goSearch(name)}
+                className="group relative h-44 w-44 shrink-0 snap-start overflow-hidden rounded-2xl shadow-md sm:w-52"
+              >
+                <img src={img} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                <span className="absolute bottom-3 left-0 right-0 text-center text-base font-semibold text-white">{name}</span>
+              </button>
             ))}
           </div>
         </section>
 
-        {/* TOP RESTAURANTS GRID */}
-        {restaurants.length > 0 && (
-          <section>
-            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-8">
-              ⭐ {lang === 'ta' ? 'உங்கள் அருகிலுள்ள சமையலறைகள்' : 'Top Rated Kitchens'}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {restaurants.slice(0, 6).map((r) => (
-                <RestaurantChip key={r.id} restaurant={r} />
-              ))}
+        {topKitchens.length > 0 && (
+          <section ref={kitchensRef} className="scroll-mt-6">
+            <h2 className="mb-6 font-serif text-3xl font-bold text-gray-900">{ta ? 'சிறந்த சமையலறைகள்' : 'Top Rated Kitchens'}</h2>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {topKitchens.map((r) => <RestaurantChip key={r.id} restaurant={r} />)}
             </div>
           </section>
         )}
 
-        {/* RECOMMENDED DISHES GRID */}
-        <section>
-          <h2 className="text-3xl font-serif font-bold text-gray-900 mb-8">
-            🔥 {lang === 'ta' ? 'உங்களுக்கான பரிந்துரைகள்' : 'Recommended for You'}
-          </h2>
-          {topDishes.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {topDishes.slice(0, 9).map((d) => (
-                <DishCard key={d.id} dish={d} />
-              ))}
+        {topDishes.length > 0 && (
+          <section>
+            <h2 className="mb-6 font-serif text-3xl font-bold text-gray-900">{ta ? 'உங்களுக்கான பரிந்துரைகள்' : 'Recommended for You'}</h2>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {topDishes.map((d) => <DishCard key={d.id} dish={d} />)}
             </div>
-          ) : (
-            <p className="text-center text-gray-600 py-12 text-lg">
-              {lang === 'ta' ? 'உணவுகள் கிடைக்கவில்லை' : 'No dishes available yet'}
-            </p>
-          )}
-        </section>
+          </section>
+        )}
       </div>
     </RootsShell>
   );
