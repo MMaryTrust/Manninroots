@@ -6,24 +6,21 @@ import DishCard from '../../components/roots/DishCard';
 import RestaurantChip from '../../components/roots/RestaurantChip';
 import { useRootsI18n } from '../../lib/roots-i18n';
 import { useApi } from '../../hooks';
+import dosaImg from '../../assets/dosa.jpg';
+import biryaniImg from '../../assets/biryani.jpg';
+import mealsImg from '../../assets/meals.jpg';
+import kothuImg from '../../assets/kothu.jpg';
+import currencyImg from '../../assets/chettinad.jpg';
+import sweetsImg from '../../assets/sweets.jpg';
 
 const CATEGORIES = [
-  { name: 'Dosa', nameTa: 'தோசை', bg: '#FFE4B5' },
-  { name: 'Biryani', nameTa: 'பிரியாணி', bg: '#FFD7A8' },
-  { name: 'Meals', nameTa: 'சாப்பாடு', bg: '#FFDAB9' },
-  { name: 'Parotta', nameTa: 'பரோட்டா', bg: '#FFE4C4' },
-  { name: 'Curry', nameTa: 'குழம்பு', bg: '#FFEAA7' },
-  { name: 'Sweets', nameTa: 'இனிப்புகள்', bg: '#FFE0BD' },
+  { name: 'Dosa', nameTa: 'தோசை', image: dosaImg },
+  { name: 'Biryani', nameTa: 'பிரியாணி', image: biryaniImg },
+  { name: 'Meals', nameTa: 'சாப்பாடு', image: mealsImg },
+  { name: 'Parotta', nameTa: 'பரோட்டா', image: kothuImg },
+  { name: 'Curry', nameTa: 'குழம்பு', image: currencyImg },
+  { name: 'Sweets', nameTa: 'இனிப்புகள்', image: sweetsImg },
 ];
-
-const CATEGORY_EMOJI = {
-  'Dosa': '🥘',
-  'Biryani': '🍛',
-  'Meals': '🍽️',
-  'Parotta': '🥙',
-  'Curry': '🌶️',
-  'Sweets': '🍰',
-};
 
 export default function RootsHome() {
   const { t, lang } = useRootsI18n();
@@ -84,21 +81,26 @@ export default function RootsHome() {
           <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
             {lang === 'ta' ? 'சமையல் வகைகள்' : 'Categories'}
           </h2>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-            {CATEGORIES.map(({ name, nameTa, bg }) => (
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+            {CATEGORIES.map(({ name, nameTa, image }) => (
               <button
                 key={name}
                 onClick={() => setSelectedCategory(selectedCategory === name ? '' : name)}
-                className={`py-4 px-3 rounded-2xl text-center transition-all transform hover:scale-105 flex flex-col items-center gap-2 border-2 ${
-                  selectedCategory === name
-                    ? 'border-amber-600 bg-amber-100'
-                    : 'border-amber-200 hover:border-amber-400'
+                className={`text-center transition-all transform hover:scale-105 flex flex-col items-center gap-2 ${
+                  selectedCategory === name ? 'opacity-100' : 'opacity-80 hover:opacity-100'
                 }`}
-                style={{ backgroundColor: selectedCategory === name ? '#FFF3E0' : bg }}
               >
-                <span className="text-3xl">{CATEGORY_EMOJI[name]}</span>
-                <span className="text-xs font-semibold text-gray-800">{name}</span>
-                <span className="text-xs text-gray-600">{nameTa}</span>
+                <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-lg hover:shadow-xl transition-shadow"
+                  style={{ borderColor: selectedCategory === name ? '#92400e' : '#ddd6c9' }}>
+                  <img src={image} alt={name} className="w-full h-full object-cover" loading="lazy" />
+                  {selectedCategory === name && (
+                    <div className="absolute inset-0 bg-black/20"></div>
+                  )}
+                </div>
+                <div className="mt-1">
+                  <p className="text-xs font-semibold text-gray-900">{name}</p>
+                  <p className="text-xs text-gray-700">{nameTa}</p>
+                </div>
               </button>
             ))}
           </div>
