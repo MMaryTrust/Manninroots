@@ -80,7 +80,13 @@ export default async function (app) {
       ]);
 
       return {
-        appointments: appointments || [],
+        appointments: appointments.map((a) => ({
+          id: a.id,
+          customerName: a.customer_name,
+          type: a.type,
+          status: a.status,
+          appointmentTime: a.appointment_time,
+        })),
         duty: duty || [],
         todayCount: appointments?.length || 0,
         dutyCount: duty?.length || 0,

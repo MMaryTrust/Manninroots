@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n.jsx';
+import { CalendarCheck, ClipboardList } from 'lucide-react';
 import { api } from '../api.js';
+import PatternCard from '../components/PatternCard.jsx';
 
 export default function AdminAppointments() {
   const { t } = useI18n();
@@ -23,19 +25,25 @@ export default function AdminAppointments() {
 
       {error && <p role="alert" className="notice">{error}</p>}
 
-      <div className="tabs-container">
-        <button
-          className={`tab-button ${activeTab === 'appointments' ? 'on' : ''}`}
+      <div className="pcards" role="group" aria-label="Schedule view">
+        <PatternCard
+          icon={CalendarCheck}
+          value={appointments?.todayCount ?? 0}
+          title="Appointments"
+          description="Scheduled consultations for today"
+          tone={activeTab === 'appointments' ? 'forest' : 'sand'}
+          selected={activeTab === 'appointments'}
           onClick={() => setActiveTab('appointments')}
-        >
-          Appointment ({appointments?.todayCount || 0})
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'duty' ? 'on' : ''}`}
+        />
+        <PatternCard
+          icon={ClipboardList}
+          value={appointments?.dutyCount ?? 0}
+          title="My Duty"
+          description="Rounds and tasks assigned today"
+          tone={activeTab === 'duty' ? 'forest' : 'sand'}
+          selected={activeTab === 'duty'}
           onClick={() => setActiveTab('duty')}
-        >
-          My Duty ({appointments?.dutyCount || 0})
-        </button>
+        />
       </div>
 
       {appointments === null ? (

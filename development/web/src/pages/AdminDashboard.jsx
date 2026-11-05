@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Users, Repeat, UtensilsCrossed, CalendarDays } from 'lucide-react';
 import { api } from '../api.js';
+import PatternCard from '../components/PatternCard.jsx';
 
 export default function AdminDashboard() {
   const [metrics, setMetrics] = useState(null);
@@ -21,42 +23,17 @@ export default function AdminDashboard() {
       {error && <p role="alert" className="notice">{error}</p>}
 
       {metrics ? (
-        <div className="metrics-grid">
-          <article className="metric-card">
-            <div className="metric-header">
-              <span className="metric-label">ACTIVE CUSTOMERS</span>
-              <span className="metric-icon">👥</span>
-            </div>
-            <div className="metric-value">{metrics.activeCustomers}</div>
-            <p className="metric-description">View all registered customers</p>
-          </article>
-
-          <article className="metric-card">
-            <div className="metric-header">
-              <span className="metric-label">ACTIVE SUBSCRIPTIONS</span>
-              <span className="metric-icon">↔️</span>
-            </div>
-            <div className="metric-value">{metrics.activeSubscriptions}</div>
-            <p className="metric-description">Subscribers with payment status</p>
-          </article>
-
-          <article className="metric-card">
-            <div className="metric-header">
-              <span className="metric-label">MEALS DELIVERED TODAY</span>
-              <span className="metric-icon">🍱</span>
-            </div>
-            <div className="metric-value">{metrics.mealsDeliveredToday}</div>
-            <p className="metric-description">Across all zones</p>
-          </article>
-
-          <article className="metric-card">
-            <div className="metric-header">
-              <span className="metric-label">TODAY'S APPOINTMENTS</span>
-              <span className="metric-icon">📷</span>
-            </div>
-            <div className="metric-value">{metrics.appointmentsToday}</div>
-            <p className="metric-description">{metrics.inPersonAppointments} in-person · {metrics.videoAppointments} video</p>
-          </article>
+        <div className="pcards">
+          <PatternCard icon={Users} value={metrics.activeCustomers} title="Active Customers" description="Registered customers currently active" />
+          <PatternCard tone="sand" icon={Repeat} value={metrics.activeSubscriptions} title="Subscriptions" description="Active meal plans with payment status" />
+          <PatternCard icon={UtensilsCrossed} value={metrics.mealsDeliveredToday} title="Meals Today" description="Delivered across all zones" />
+          <PatternCard
+            tone="sand"
+            icon={CalendarDays}
+            value={metrics.appointmentsToday}
+            title="Appointments"
+            description={`${metrics.inPersonAppointments} in-person · ${metrics.videoAppointments} video today`}
+          />
         </div>
       ) : (
         <p className="muted">Loading metrics...</p>

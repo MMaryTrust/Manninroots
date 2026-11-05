@@ -170,3 +170,38 @@ html[data-text="2"]{font-size:112.5%}html[data-text="3"]{font-size:125%}
 .cart-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e5e0d5}
 .qty-controls{display:flex;align-items:center;gap:8px;border:1px solid #e5e0d5;border-radius:6px}
 .qty-controls button{background:none;border:none;padding:6px 8px;cursor:pointer;font-weight:600}
+
+/* Pattern cards (forest = diagonal lines, sand = grid). Fixed colours so they read the same in dark mode. */
+.admin-hero{position:relative;overflow:hidden;isolation:isolate;background:#19493F;color:#fff;text-align:left;padding:40px 36px}
+.admin-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(135deg,transparent 0 28px,rgba(255,255,255,.08) 28px 29.5px);-webkit-mask-image:linear-gradient(90deg,transparent 35%,#000);mask-image:linear-gradient(90deg,transparent 35%,#000)}
+.admin-hero h1{color:#fff;font-style:italic;font-size:clamp(2rem,4vw,2.6rem)}
+.admin-hero p{color:rgba(255,255,255,.86);max-width:62ch}
+.pcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin:0 0 32px}
+.pcard{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;min-height:300px;padding:28px;border:0;border-radius:16px;text-align:left;font:inherit;transition:transform .2s ease,box-shadow .2s ease}
+button.pcard{width:100%;cursor:pointer;min-height:220px}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 16px 32px -16px rgba(25,73,63,.5)}
+.pcard:focus-visible{outline:3px solid #AD7C2A;outline-offset:3px}
+.pcard::before{content:"";position:absolute;inset:0 0 auto;height:60%;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.pcard--compact{min-height:220px}
+.pcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:20px;border-bottom:1px solid}
+.pcard-icon{width:52px;height:52px;flex:none;stroke-width:1.5}
+.pcard-num{font-family:var(--serif);font-style:italic;font-size:clamp(4rem,6vw,6rem);line-height:.8;letter-spacing:-.02em}
+.pcard-num--long{font-size:clamp(3rem,4.4vw,4.4rem)}
+.pcard-body{margin-top:auto;padding-top:24px}
+.pcard-title{margin:0 0 6px;font-family:var(--serif);font-style:italic;font-size:1.9rem;line-height:1.1;color:inherit}
+.pcard-desc{margin:0;font-size:.95rem;line-height:1.5}
+.pcard--forest{background:#19493F;color:#fff}
+.pcard--forest::before{background:repeating-linear-gradient(135deg,transparent 0 28px,rgba(255,255,255,.12) 28px 29.5px)}
+.pcard--forest .pcard-top{border-color:rgba(255,255,255,.22)}
+.pcard--forest .pcard-num{color:rgba(255,255,255,.72)}
+.pcard--forest .pcard-desc{color:rgba(255,255,255,.86)}
+.pcard--sand{background:#F4E3B5;color:#4F3F2A}
+.pcard--sand::before{background-image:linear-gradient(rgba(150,115,60,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(150,115,60,.16) 1px,transparent 1px);background-size:30px 30px}
+.pcard--sand .pcard-top{border-color:rgba(120,95,55,.24)}
+.pcard--sand .pcard-icon{color:#7D6849}
+.pcard--sand .pcard-num{color:#8A6F45}
+.pcard--sand .pcard-desc{color:#5E4D36}
+@media (prefers-reduced-motion:reduce){.pcard{transition:none}.pcard:hover{transform:none}}
+.dish-header .badge{flex:none;white-space:nowrap}
+.dish-nutrition small{display:flex;flex-wrap:wrap;gap:4px 14px}
+.dish-nutrition span{white-space:nowrap}

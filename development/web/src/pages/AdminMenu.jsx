@@ -1,30 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Sunrise, Sun, Moon } from 'lucide-react';
 import { useI18n } from '../i18n.jsx';
 import { api } from '../api.js';
+import PatternCard from '../components/PatternCard.jsx';
+
+const SLOTS = [
+  { id: 'Breakfast', icon: Sunrise },
+  { id: 'Lunch', icon: Sun },
+  { id: 'Dinner', icon: Moon },
+];
+
+const dishCount = (n) => `${n} ${n === 1 ? 'dish' : 'dishes'}`;
 
 export default function AdminMenu() {
-  const { t, bi, lang, setLang } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const [dishes, setDishes] = useState([]);
   const [error, setError] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('Breakfast');
   const [selectedTag, setSelectedTag] = useState('');
 
   useEffect(() => {
-    api('/api/menu')
+    api('/menu')
       .then(setDishes)
       .catch((e) => setError(e.message));
   }, []);
 
-  const filtered = dishes.filter(d =>
-    d.slot === selectedSlot &&
-    (!selectedTag || d.tags.includes(selectedTag))
-  );
-
-  const slotDishes = {
-    Breakfast: dishes.filter(d => d.slot === 'Breakfast'),
-    Lunch: dishes.filter(d => d.slot === 'Lunch'),
-    Dinner: dishes.filter(d => d.slot === 'Dinner'),
-  };
+  const tags = useMemo(() => [...new Set(dishes.flatMap((d) => d.tags))].sort(), [dishes]);
+  const filtered = dishes.filter((d) => d.slot === selectedSlot && (!selectedTag || d.tags.includes(selectedTag)));
 
   return (
     <section className="admin-section">
@@ -48,70 +50,81 @@ export default function AdminMenu() {
 
       {error && <p role="alert" className="notice">{error}</p>}
 
-      <div className="slot-selector">
-        <button className="pill" aria-label="Filter by language">🌐 {lang === 'en' ? 'தமிழ்' : 'English'}</button>
-        <button className="pill" title="Diabetic-friendly">📊 HC</button>
-      </div>
-
       <p className="order-cutoff">⏰ Order before 8:00 PM — 20h 9m remaining for tomorrow's meals.</p>
 
-      <div className="tag-filters">
-        {['All', 'Veg', 'Non-Veg', 'Diabetes-friendly', 'High Protein'].map((tag) => (
+      <div className="pcards" role="group" aria-label="Meal slot">
+        {SLOTS.map(({ id, icon }) => {
+          const slotDishes = dishes.filter((d) => d.slot === id);
+          const diabetic = slotDishes.filter((d) => d.tags.includes('Diabetic')).length;
+          return (
+            <PatternCard
+              key={id}
+              icon={icon}
+              value={slotDishes.length}
+              title={t(id)}
+              description={`${dishCount(slotDishes.length)} · ${diabetic} diabetic-friendly`}
+              tone={selectedSlot === id ? 'forest' : 'sand'}
+              selected={selectedSlot === id}
+              onClick={() => setSelectedSlot(id)}
+            />
+          );
+        })}
+      </div>
+
+      <div className="tag-filters" role="group" aria-label="Filter by tag">
+        {['', ...tags].map((tag) => (
           <button
-            key={tag}
-            className={`tag-filter ${tag === 'All' || tag === selectedTag ? 'on' : ''}`}
-            onClick={() => setSelectedTag(tag === 'All' ? '' : tag)}
+            key={tag || 'all'}
+            className={`tag-filter ${tag === selectedTag ? 'on' : ''}`}
+            aria-pressed={tag === selectedTag}
+            onClick={() => setSelectedTag(tag)}
           >
-            {tag === 'Veg' ? '🟢' : tag === 'Non-Veg' ? '🟤' : tag === 'Diabetes-friendly' ? '📊' : tag === 'High Protein' ? '💪' : '✓'} {tag}
+            {tag || 'All'}
           </button>
         ))}
       </div>
 
-      <div className="menu-sections">
-        {Object.entries(slotDishes).map(([slot, slotItems]) => (
-          <section key={slot} className="menu-slot">
-            <h2 className="slot-title">
-              {slot === 'Breakfast' ? '🥣' : slot === 'Lunch' ? '🍽️' : '🌙'} {t(slot)}
-            </h2>
-            <p className="slot-count">{slotItems.length} dishes</p>
+      <section className="menu-slot">
+        <h2 className="slot-title">{t(selectedSlot)}</h2>
+        <p className="slot-count">{dishCount(filtered.length)}{selectedTag && ` · ${selectedTag}`}</p>
 
-            <div className="dishes-grid">
-              {slotItems.map((d) => (
-                <article key={d.id} className="dish-card">
-                  <div className="dish-header">
+        {filtered.length === 0 ? (
+          <p className="muted">No dishes match this filter.</p>
+        ) : (
+          <div className="dishes-grid">
+            {filtered.map((d) => (
+              <article key={d.id} className="dish-card">
+                <div className="dish-header">
+                  <div>
                     <b>{d.name}</b>
-                    {d.tags.includes('Signature') && <span className="badge">⭐ Signature</span>}
+                    {d.nameTa && <><br /><small className="muted">{d.nameTa}</small></>}
                   </div>
+                  {d.gi && <span className="badge">{d.gi}</span>}
+                </div>
 
-                  <div className="dish-info">
-                    <span className="rating">⭐ {d.rating?.toFixed(1) || '4.5'}</span>
-                    <span className="price">₹{d.priceInr || d.price || 100}</span>
-                  </div>
+                <div className="dish-tags">
+                  {d.tags.map((tag) => (
+                    <span key={tag} className="badge green">{tag}</span>
+                  ))}
+                </div>
 
-                  <div className="dish-tags">
-                    {d.tags.map((tag) => (
-                      <span key={tag} className="badge green">{tag}</span>
-                    ))}
-                  </div>
+                <div className="dish-nutrition">
+                  <small>
+                    {d.kcal != null && <span>🔥 {d.kcal} kcal</span>}
+                    {d.protein != null && <span>💪 {d.protein}g protein</span>}
+                    {d.carbs != null && <span>🌾 {d.carbs}g carbs</span>}
+                  </small>
+                </div>
 
-                  <div className="dish-nutrition">
-                    <small>
-                      {d.gi && <span>🍂 {d.gi}</span>}
-                      {d.kcal && <span>🔥 {d.kcal} kcal</span>}
-                      {d.protein && <span>💪 {d.protein}g</span>}
-                    </small>
-                  </div>
-
-                  <div className="dish-actions">
-                    <button className="btn sm">Edit</button>
-                    <button className="btn ghost sm">Delete</button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+                <div className="dish-actions">
+                  <button className="btn sm">Edit</button>
+                  <button className="btn ghost sm">Delete</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </section>
   );
 }
