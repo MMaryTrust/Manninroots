@@ -24,8 +24,10 @@ export default function RootsStaffPage() {
 
   return (
     <section className="admin-section">
-      <h1 className="serif">Mannin Roots Orders</h1>
-      <p className="muted">Manage all Mannin Roots orders and track their status.</p>
+      <div className="admin-hero">
+        <h1 className="serif">Mannin Roots Orders</h1>
+        <p>Manage all Mannin Roots orders and track their status.</p>
+      </div>
 
       {!canRoots && <p className="card">Your screens are being moved to the new platform. Roots orders are visible to kitchen, rider, manager, admin and owner roles.</p>}
 

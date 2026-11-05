@@ -28,8 +28,10 @@ export default function AdminMenu() {
 
   return (
     <section className="admin-section">
-      <h1 className="serif">{t('Today\'s Menu')}</h1>
-      <p className="muted">Home-style cooking · {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      <div className="admin-hero">
+        <h1 className="serif">{t('Today\'s Menu')}</h1>
+        <p>Home-style cooking · {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
 
       <div className="admin-header">
         <div className="tabs">

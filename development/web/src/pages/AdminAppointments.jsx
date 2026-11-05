@@ -16,8 +16,10 @@ export default function AdminAppointments() {
 
   return (
     <section className="admin-section">
-      <h1 className="serif">Care Scheduling</h1>
-      <p className="muted">Today's visits, upcoming duty schedule and appointment settings for every subscribed family member.</p>
+      <div className="admin-hero">
+        <h1 className="serif">Care Scheduling</h1>
+        <p>Today's visits, upcoming duty schedule and appointment settings for every subscribed family member.</p>
+      </div>
 
       {error && <p role="alert" className="notice">{error}</p>}
 

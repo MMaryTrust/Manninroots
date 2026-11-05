@@ -13,8 +13,10 @@ export default function AdminDashboard() {
 
   return (
     <section className="admin-section">
-      <h1 className="serif">Welcome back — Admin</h1>
-      <p className="muted">Snapshot of today's operations across kitchens, subscriptions and consults.</p>
+      <div className="admin-hero">
+        <h1 className="serif">Welcome back — Admin</h1>
+        <p>Snapshot of today's operations across kitchens, subscriptions and consults.</p>
+      </div>
 
       {error && <p role="alert" className="notice">{error}</p>}
 
