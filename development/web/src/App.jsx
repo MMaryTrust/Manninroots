@@ -1,6 +1,8 @@
 import { Routes, Route, NavLink, Link, Navigate, useLocation } from 'react-router-dom';
 import { useI18n } from './i18n.jsx';
 import { useAuth } from './auth.jsx';
+import { CartProvider } from './lib/roots-cart.jsx';
+import { RootsI18nProvider } from './lib/roots-i18n.jsx';
 import Home from './pages/Home.jsx';
 import Plans from './pages/Plans.jsx';
 import MenuPage from './pages/Menu.jsx';
@@ -8,8 +10,16 @@ import SignIn from './pages/SignIn.jsx';
 import Roots from './pages/Roots.jsx';
 import RootsOrders from './pages/RootsOrders.jsx';
 import Staff from './pages/Staff.jsx';
+// Customer-facing Roots pages
+import RootsHome from './pages/roots/RootsHome.jsx';
+import RootsSearch from './pages/roots/RootsSearch.jsx';
+import RootsDish from './pages/roots/RootsDish.jsx';
+import RootsRestaurant from './pages/roots/RootsRestaurant.jsx';
+import RootsCart from './pages/roots/RootsCart.jsx';
+import RootsOrdersCustomer from './pages/roots/RootsOrders.jsx';
+import RootsAccount from './pages/roots/RootsAccount.jsx';
 
-const NAV = [['/', 'Home'], ['/plans', 'Plans'], ['/menu', 'Menu'], ['/roots', 'Roots']];
+const NAV = [['/', 'Home'], ['/plans', 'Plans'], ['/menu', 'Menu'], ['/roots/', 'Roots']];
 const ADDRESS = 'Virachilai, Pudukkottai, Tamil Nadu';
 
 function PublicShell({ children }) {
@@ -56,9 +66,32 @@ function AdminOnly({ children }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/roots" element={<AdminOnly><Roots /></AdminOnly>} />
-      <Route path="/roots/orders" element={<AdminOnly><RootsOrders /></AdminOnly>} />
+      {/* Admin Roots (protected) */}
+      <Route path="/roots/admin" element={<AdminOnly><Roots /></AdminOnly>} />
+      <Route path="/roots/admin/orders" element={<AdminOnly><RootsOrders /></AdminOnly>} />
+
+      {/* Customer-facing Roots (public) */}
+      <Route path="/roots/*" element={
+        <CartProvider>
+          <RootsI18nProvider>
+            <Routes>
+              <Route path="/" element={<RootsHome />} />
+              <Route path="/search" element={<RootsSearch />} />
+              <Route path="/dish/:dishId" element={<RootsDish />} />
+              <Route path="/restaurant/:restaurantId" element={<RootsRestaurant />} />
+              <Route path="/cart" element={<RootsCart />} />
+              <Route path="/orders" element={<RootsOrdersCustomer />} />
+              <Route path="/account" element={<RootsAccount />} />
+              <Route path="*" element={<div className="wrap sec"><h1 className="serif">Page not found</h1><Link className="btn" to="/roots">Home</Link></div>} />
+            </Routes>
+          </RootsI18nProvider>
+        </CartProvider>
+      } />
+
+      {/* Admin */}
       <Route path="/app/*" element={<AdminOnly><Staff /></AdminOnly>} />
+
+      {/* Public pages */}
       <Route path="*" element={
         <PublicShell>
           <Routes>
