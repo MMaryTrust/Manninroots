@@ -11,23 +11,27 @@ export default function RootsShell({ children }) {
   const { count } = useCart();
 
   return (
-    <div className="roots-shell flex flex-col min-h-screen bg-gray-50">
+    <div className="roots-shell flex flex-col min-h-screen bg-gradient-to-b from-amber-50 to-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white border-b border-amber-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/roots" className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-blue-600">🌿 Mannin Roots</h1>
+            <span className="text-3xl">🌿</span>
+            <div>
+              <h1 className="text-lg font-serif font-bold text-amber-900">मण्णिन रूट्स</h1>
+              <p className="text-xs text-amber-700">Mannin Roots</p>
+            </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <LanguageToggle />
             <Link
               to="/roots/cart"
-              className="relative p-2 rounded-lg hover:bg-gray-100 transition"
+              className="relative p-2 rounded-full hover:bg-amber-100 transition"
               aria-label={`${t('cart')}: ${count} items`}
             >
-              <ShoppingBag size={24} className="text-gray-700" />
+              <ShoppingBag size={24} className="text-amber-700" />
               {count > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
                   {count}
                 </span>
               )}
@@ -37,7 +41,7 @@ export default function RootsShell({ children }) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-20 max-w-4xl w-full mx-auto px-4 py-6">
+      <main className="flex-1 pb-24 max-w-5xl w-full mx-auto px-4 py-8">
         {children}
       </main>
 

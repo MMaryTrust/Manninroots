@@ -18,13 +18,13 @@ export default function SearchBox() {
   return (
     <form onSubmit={handleSearch} className="w-full">
       <div className="relative">
-        <Search size={20} className="absolute left-3 top-3 text-gray-400" />
+        <Search size={20} className="absolute left-4 top-3.5 text-amber-600" />
         <input
           type="text"
           placeholder={t('search_dishes')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-12 pr-4 py-3 border-2 border-amber-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition placeholder:text-gray-500 text-gray-900 font-medium"
         />
       </div>
     </form>
