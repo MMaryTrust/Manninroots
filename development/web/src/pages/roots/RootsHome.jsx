@@ -64,9 +64,9 @@ export default function RootsHome() {
   };
 
   return (
-    <RootsShell>
+    <RootsShell fullHero={true}>
       {/* HERO SECTION - Dark Professional Design */}
-      <div className="relative -mx-4 -mt-8 -mb-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 pt-16 pb-20 px-4 overflow-hidden">
+      <div className="relative w-screen -ml-[calc((100vw-100%)/2)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 pt-16 pb-20 px-4 overflow-hidden">
         {/* Background Glow Effect */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gradient-to-b from-orange-500/20 via-orange-500/10 to-transparent rounded-full blur-3xl"></div>
@@ -119,7 +119,7 @@ export default function RootsHome() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-16 px-4 py-12 max-w-6xl mx-auto">
+      <div className="space-y-16 px-4 py-12 max-w-6xl mx-auto w-full">
         {/* CUISINES CAROUSEL */}
         <section>
           <div className="flex items-center justify-between mb-8">
