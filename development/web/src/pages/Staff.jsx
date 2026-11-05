@@ -4,7 +4,6 @@ import { useAuth } from '../auth.jsx';
 import AdminDashboard from './AdminDashboard.jsx';
 import AdminMenu from './AdminMenu.jsx';
 import AdminAppointments from './AdminAppointments.jsx';
-import RootsStaffPage from './RootsStaffPage.jsx';
 
 // Embeds the customer site so its own navigation, cart and fixed bottom bar work unchanged inside the admin panel.
 function RootsCustomerView() {
@@ -24,9 +23,7 @@ export default function Staff() {
     { id: 'dashboard', label: 'Dashboard', component: AdminDashboard },
     { id: 'menu', label: 'Menu & Meals', component: AdminMenu },
     { id: 'appointments', label: 'Appointments', component: AdminAppointments },
-    { id: 'roots', label: 'Mannin Roots', component: RootsCustomerView },
-    { id: 'roots-orders', label: 'Roots Orders', component: RootsStaffPage },
-  ];
+    { id: 'roots', label: 'Mannin Roots', component: RootsCustomerView },  ];
 
   const currentPage = PAGES.find((p) => p.id === activePage);
   const CurrentComponent = currentPage?.component || AdminDashboard;
