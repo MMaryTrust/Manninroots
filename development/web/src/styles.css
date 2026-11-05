@@ -203,5 +203,7 @@ button.pcard{width:100%;cursor:pointer;min-height:220px}
 .pcard--sand .pcard-desc{color:#5E4D36}
 @media (prefers-reduced-motion:reduce){.pcard{transition:none}.pcard:hover{transform:none}}
 .dish-header .badge{flex:none;white-space:nowrap}
+.roots-frame{display:block;width:100%;height:calc(100vh - 48px);border:1px solid var(--line);border-radius:16px;background:#fff}
+@media(max-width:820px){.roots-frame{height:calc(100vh - 160px)}}
 .dish-nutrition small{display:flex;flex-wrap:wrap;gap:4px 14px}
 .dish-nutrition span{white-space:nowrap}

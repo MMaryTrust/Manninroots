@@ -6,6 +6,11 @@ import AdminMenu from './AdminMenu.jsx';
 import AdminAppointments from './AdminAppointments.jsx';
 import RootsStaffPage from './RootsStaffPage.jsx';
 
+// Embeds the customer site so its own navigation, cart and fixed bottom bar work unchanged inside the admin panel.
+function RootsCustomerView() {
+  return <iframe className="roots-frame" src="/roots" title="Mannin Roots customer site" />;
+}
+
 const ROLE_LABEL = {
   owner: 'Shop Owner', admin: 'Admin', doctorAdmin: 'Doctor Admin', doctor: 'Doctor',
   manager: 'Manager', kitchen: 'Kitchen Staff', rider: 'Delivery Rider', customer: 'Customer',
@@ -19,7 +24,8 @@ export default function Staff() {
     { id: 'dashboard', label: 'Dashboard', component: AdminDashboard },
     { id: 'menu', label: 'Menu & Meals', component: AdminMenu },
     { id: 'appointments', label: 'Appointments', component: AdminAppointments },
-    { id: 'roots', label: 'Mannin Roots', component: RootsStaffPage },
+    { id: 'roots', label: 'Mannin Roots', component: RootsCustomerView },
+    { id: 'roots-orders', label: 'Roots Orders', component: RootsStaffPage },
   ];
 
   const currentPage = PAGES.find((p) => p.id === activePage);
